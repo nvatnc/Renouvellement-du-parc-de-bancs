@@ -1,40 +1,24 @@
-# Renouvellement-du-parc-de-bancs
-Projet Infrastructure Données Renouvellement du parc de bancs de Nehdi Maissam Nour et Tunca Neva
+# Projet : Création d’une infrastructure de données  
+### Sujet : Renouvellement des bancs dans le parc public  
 
-Brief D — Renouvellement du parc de bancs
+## Jour 1 — 20 février 2026
 
-Contexte
+Notre groupe a pour mission de **concevoir et gérer l’infrastructure des données** liée au **renouvellement des bancs dans le parc public**.  
+La responsable du service technique (notre enseignante) nous a fourni les fiches de données nécessaires au projet, disponibles sous forme de **fichiers Excel**.
 
-Le fournisseur principal de bancs (Mobilier Urbain Suisse SA) a fermé en mars 2025. Avant de chercher un nouveau fournisseur, le Service technique a besoin d'un état des lieux complet.
+Nous avons commencé par **analyser les quatre fichiers Excel** remis :
+- **Fournisseurs**
+- **Inventaires**
+- **Interventions**
+- **Signalements**
 
-Demande
+Chaque table contient plusieurs attributs. Pour identifier ceux qui nous seraient utiles, nous avons sélectionné les éléments les plus pertinents pour notre objectif : le suivi du renouvellement des bancs.
 
-Livrable 1 — État du parc actuel
+Ensuite, nous avons :
+- **Créé un MCD (Modèle Conceptuel de Données)** afin de visualiser la structure des données.
+- **Élaboré un MLD (Modèle Logique de Données)** pour normaliser et corriger les tables et leurs relations.
+- **Nettoyé et ajusté les données** selon les observations faites durant notre analyse initiale.
 
-Produire une vue SQL qui affiche :
-
-Le nombre total de bancs
-La répartition par matériau (bois / métal)
-L'âge moyen par matériau
-La répartition par état (bon / usé / à remplacer)
-Le nombre de bancs sans coordonnées GPS
-Livrable 2 — Bancs à remplacer dans les 2 ans
-
-Produire une vue SQL qui identifie les bancs nécessitant un remplacement, définis comme :
-
-État = "usé" ou "à remplacer"
-OU plus de 3 interventions enregistrées
-Afficher pour chaque banc : le lieu, le matériau, l'âge, le nombre d'interventions, l'état, et les coordonnées GPS.
-
-Livrable 3 — Estimation budgétaire
-
-Produire une vue SQL qui calcule :
-
-Le nombre de bancs à remplacer (depuis le livrable 2)
-Le coût moyen d'un remplacement (basé sur les interventions de type "remplacement" dans l'historique)
-Le budget total estimé
-La répartition du budget : bancs bois vs bancs métal
-Format de rendu
-
-3 vues SQL nommées v_parc_bancs, v_bancs_a_remplacer, v_budget_bancs
-Un court paragraphe (5-10 lignes) avec une recommandation (bois ou métal pour les remplacements ?)
+Enfin, nous avons :
+- Créé notre **dépôt GitHub** et ajouté un **fichier README** pour documenter le projet.  
+- Poursuivi avec la **rédaction du MLD**, en intégrant les ajustements issus du MCD.
