@@ -22,3 +22,18 @@ Ensuite, nous avons :
 Enfin, nous avons :
 - Créé notre **dépôt GitHub** et ajouté un **fichier README** pour documenter le projet.  
 - Poursuivi avec la **rédaction du MLD**, en intégrant les ajustements issus du MCD.
+
+***
+
+## Jour 2 — 27 février 2026
+
+Lors de cette journée, nous avons **finalisé le MLD** et consolidé notre compréhension de **Git**.  
+Nous avons ensuite **initialisé le projet** en y intégrant les **données (fichiers Excel)** fournies au départ.
+
+Les étapes réalisées :
+- Création du fichier **`docker-compose.yml`** pour configurer l’environnement du projet.  
+- Mise en place du dossier **`initdb`**, dans lequel nous avons commencé la rédaction du **MPD (Modèle Physique de Données)**.  
+- Réalisation des **commits** et **synchronisation du dépôt Git** afin de conserver une trace de toutes les modifications.
+
+***
+
