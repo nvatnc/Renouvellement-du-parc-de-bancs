@@ -37,3 +37,22 @@ Les étapes réalisées :
 
 ***
 
+## Jour 3 — 6 mars 2026
+
+Cette journée a été plutôt calme, car nous étions **en avance sur le planning**.  
+Nous avons pris le temps de **vérifier une dernière fois le MCD et le MLD**, afin de s’assurer de leur cohérence.  
+Ensuite, nous avons **commencé la rédaction du MPD (Modèle Physique de Données)**.
+
+***
+
+## Jour 4 — 13 mars 2026
+
+Nous avons **terminé la rédaction du MPD**, qui correspond à nos choix et à la structure souhaitée pour la base de données.  
+Nous avons ensuite entamé le **nettoyage des données** contenues dans les fichiers Excel.  
+Certaines tables présentaient des **attributs incohérents, en double ou mal orthographiés**, ce qui entraînait des erreurs lors de la création de la base de données.
+
+Pour faciliter ce nettoyage :
+- Nous avons **exporté les fichiers Excel au format CSV**, afin d’obtenir des données plus lisibles et exploitables par VS Code.  
+- Nous avons ensuite **créé la phase de “staging”**, qui nous permet d’intégrer progressivement les données dans la base et les tables de manière structurée.
+
+***
