@@ -60,8 +60,7 @@ CREATE TABLE fournisseurs (
   entreprise VARCHAR(255) NOT NULL,
   remarque TEXT,
   id_contact INTEGER NOT NULL REFERENCES contact(id),
-  id_type_materiel INTEGER NOT NULL REFERENCES type_materiel(id),
-  id_remarques_fournisseurs INTEGER REFERENCES remarques_fournisseurs(id)
+  id_type_materiel INTEGER NOT NULL REFERENCES type_materiel(id)
 );
 
 CREATE TABLE inventaire (
@@ -74,8 +73,7 @@ CREATE TABLE inventaire (
   id_fournisseurs INTEGER REFERENCES fournisseurs(id),
   id_type_inventaire INTEGER NOT NULL REFERENCES type_inventaire(id),
   id_materiaux INTEGER NOT NULL REFERENCES materiaux(id),
-  id_etat INTEGER NOT NULL REFERENCES etat(id),
-  id_remarques_inventaire INTEGER REFERENCES remarques_inventaire(id)
+  id_etat INTEGER NOT NULL REFERENCES etat(id)
 );
 CREATE TABLE signalements (
   id SERIAL PRIMARY KEY,
@@ -96,8 +94,7 @@ CREATE TABLE interventions (
   id_inventaire INTEGER NOT NULL REFERENCES inventaire(id),
   id_techniciens INTEGER NOT NULL REFERENCES techniciens(id),
   id_signalements INTEGER NOT NULL REFERENCES signalements(id),
-  id_type_interventions INTEGER NOT NULL REFERENCES type_interventions(id),
-  id_remarques_interventions INTEGER REFERENCES remarques_intervention(id)
+  id_type_interventions INTEGER NOT NULL REFERENCES type_interventions(id)
 );
 CREATE TABLE interventions_inventaire (
   id_interventions INTEGER NOT NULL REFERENCES interventions(id),
@@ -108,5 +105,5 @@ CREATE TABLE interventions_inventaire (
 CREATE TABLE signalements_inventaire (
   id_signalements INTEGER NOT NULL REFERENCES signalements(id),
   id_inventaire INTEGER NOT NULL REFERENCES inventaire(id),
-  PRIMARY KEY(id_signalement, id_inventaire)
+  PRIMARY KEY(id_signalements, id_inventaire)
 );
