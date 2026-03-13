@@ -71,6 +71,38 @@ Les étapes réalisées :
 Cette journée a été plutôt calme, car nous étions **en avance sur le planning**.  
 Nous avons pris le temps de **vérifier une dernière fois le  et le MLD**, afin de s’assurer de leur cohérence.  
 Ensuite, nous avons **commencé la rédaction du MPD (Modèle Physique de Données)**.
+Voici une section **Markdown complète** pour ton fichier **README.md**, dédiée au **MLD (Modèle Logique de Données)**. Elle documente le diagramme de manière claire et professionnelle, en continuité avec la section MCD précédente. Colle-la juste après !
+
+***
+
+## Modèle Logique de Données (MLD)
+
+Le **MLD** affine le MCD en **normalisant les tables** (forme normale 3NF) et en définissant les **clés primaires (PK)** et **clés étrangères (FK)** pour l'implémentation relationnelle. Il intègre les corrections issues de l'analyse des données Excel (suppression des doublons, normalisation des types).
+
+
+### Structure des tables
+
+| Table          | Clés primaires (PK) | Clés étrangères (FK)                  | Attributs principaux |
+|----------------|---------------------|----------------------------------------|----------------------|
+| **contact**   | id_contact         | -                                      | nom, prénom, téléphone, email |
+| **fournisseur**| id_fournisseur    | fk_contact, fk_type_materiau          | nom_entreprise, remarques |
+| **inventaire**| id_inventaire     | fk_fournisseur, fk_type_materiau, fk_etat | type, latitude, longitude, etat |
+| **signalement**| id_signalement   | fk_inventaire                         | date, description, statut |
+| **intervention** | id_intervention | fk_signalement, fk_type_materiau      | date, technicien, materiel_utilise, problemes |
+
+### Relations logiques
+- **1,n : Fournisseur → Inventaire** : Un fournisseur peut avoir plusieurs bancs en inventaire.
+- **1,n : Inventaire → Signalement** : Un banc peut générer plusieurs signalements citoyens.
+- **1,n : Signalement → Intervention** : Un signalement peut déclencher plusieurs interventions.
+- **n,n : Type_matériau** (table de liaison) : Gère les associations multiples (ex. : un banc utilise plusieurs matériaux).
+
+### Améliorations apportées par rapport au MCD
+- **Séparation Contact/Fournisseur** : Évite les doublons en isolant les infos personnelles des entreprises.
+- **Types de matériaux normalisés** : Table de référence pour éviter les incohérences (ex. : "bois" vs "Bois").
+- **États standardisés** : Pour l'inventaire (bon/à rénover/HS).
+- **Géolocalisation** : Coordonnées précises pour mapping futur des bancs.
+
+Ce MLD a été validé lors du **Jour 4** et sert de base pour le **MPD** (scripts SQL de création).
 
 ***
 
