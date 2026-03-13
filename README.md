@@ -25,6 +25,35 @@ Enfin, nous avons :
 
 ***
 
+## Modèle Conceptuel de Données (MCD)
+
+Le **MCD** représente la structure conceptuelle de notre base de données pour le suivi du renouvellement des bancs du parc public. Il identifie les **4 entités principales** et leurs **relations**, basées sur l'analyse des fichiers Excel fournis.
+
+### Description des entités
+
+| Entité       | Attributs principaux                  | Rôle dans le projet |
+|--------------|---------------------------------------|---------------------|
+| **Fournisseurs** | PKd (id), Entreprise, Téléphone, Email, Rémarques | Référence des fournisseurs de bancs/matériel |
+| **Inventaire** | PKd (id), Type, Matériau, Latitude, Longitude, État | Suivi des bancs installés dans le parc |
+| **Interventions** | PKd (id), Date, Objet intervention, Technicien, Matériel utilisé, Rémarques | Historique des actions de maintenance/renouvellement |
+| **Signalements** | PKd (id), Date, Description, Statut | Rapports citoyens sur l'état des bancs |
+
+### Relations entre entités
+- **Fournisseurs** → **Inventaire** : Un fournisseur peut livrer plusieurs bancs (relation 1,n).
+- **Inventaire** → **Interventions** : Un banc peut faire l'objet de plusieurs interventions (relation 1,n).
+- **Interventions** → **Signalements** : Une intervention peut résulter d'un ou plusieurs signalements (relation n,1). *Note : "Si possible détecter un problème → intervention"*.
+
+### Annotations et décisions prises
+Nos observations sur les données Excel nous ont conduits à ces ajustements :
+- **Fusion des fournisseurs** : Éviter les doublons en normalisant les noms d'entreprises.
+- **Géolocalisation précise** : Latitude/longitude obligatoires pour cartographier les bancs.
+- **Statut des signalements** : Ajout pour suivre l'évolution (ouvert/clos/en cours).
+- **Lien intervention-signalement** : Permet de tracer les actions correctives depuis les rapports citoyens.
+
+Ce MCD a servi de base pour passer au **MLD** (normalisation 3NF) puis au **MPD** (implémentation PostgreSQL via Docker).
+
+***
+
 ## Jour 2 — 27 février 2026
 
 Lors de cette journée, nous avons **finalisé le MLD** et consolidé notre compréhension de **Git**.  
@@ -40,7 +69,7 @@ Les étapes réalisées :
 ## Jour 3 — 6 mars 2026
 
 Cette journée a été plutôt calme, car nous étions **en avance sur le planning**.  
-Nous avons pris le temps de **vérifier une dernière fois le MCD et le MLD**, afin de s’assurer de leur cohérence.  
+Nous avons pris le temps de **vérifier une dernière fois le  et le MLD**, afin de s’assurer de leur cohérence.  
 Ensuite, nous avons **commencé la rédaction du MPD (Modèle Physique de Données)**.
 
 ***
