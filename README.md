@@ -145,8 +145,8 @@ CREATE TABLE type_materiau (
 CREATE TABLE inventaire (
     id_inventaire SERIAL PRIMARY KEY,
     type VARCHAR(50) NOT NULL,
-    latitude DECIMAL(10,8) NOT NULL,
-    longitude DECIMAL(11,8) NOT NULL,
+    latitude NUMERIC (9, 6) NOT NULL,
+    longitude NUMERIC(9, 6) NOT NULL,
     etat VARCHAR(20) DEFAULT 'bon',
     fk_fournisseur INTEGER REFERENCES fournisseur(id_fournisseur),
     fk_type_materiau INTEGER REFERENCES type_materiau(id_type)
