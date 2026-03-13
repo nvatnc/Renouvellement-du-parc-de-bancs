@@ -3,18 +3,15 @@ CREATE TABLE type_materiel (
   libelle VARCHAR(100) NOT NULL
 );
 
-
 CREATE TABLE type_inventaire (
   id SERIAL PRIMARY KEY,
   libelle VARCHAR(100) NOT NULL
 );
 
-
 CREATE TABLE type_interventions (
   id SERIAL PRIMARY KEY,
   libelle VARCHAR(100) NOT NULL
 );
-
 
 CREATE TABLE materiaux (
   id SERIAL PRIMARY KEY,
@@ -55,6 +52,7 @@ CREATE TABLE techniciens (
   prenom VARCHAR(100) NOT NULL,
   numero_telephone VARCHAR(30) UNIQUE
 );
+
 CREATE TABLE fournisseurs (
   id SERIAL PRIMARY KEY,
   entreprise VARCHAR(255) NOT NULL,
@@ -75,11 +73,11 @@ CREATE TABLE inventaire (
   id_materiaux INTEGER NOT NULL REFERENCES materiaux(id),
   id_etat INTEGER NOT NULL REFERENCES etat(id)
 );
+
 CREATE TABLE signalements (
   id SERIAL PRIMARY KEY,
   date_signalements DATE NOT NULL,
-  description_signalement TEXT NOT NULL,
-
+  description TEXT NOT NULL,
   id_urgence INTEGER NOT NULL REFERENCES urgence(id),
   id_personne INTEGER NOT NULL REFERENCES personne(id),
   id_statut INTEGER NOT NULL REFERENCES statut(id)
@@ -96,6 +94,7 @@ CREATE TABLE interventions (
   id_signalements INTEGER NOT NULL REFERENCES signalements(id),
   id_type_interventions INTEGER NOT NULL REFERENCES type_interventions(id)
 );
+
 CREATE TABLE interventions_inventaire (
   id_interventions INTEGER NOT NULL REFERENCES interventions(id),
   id_inventaire INTEGER NOT NULL REFERENCES inventaire(id),
