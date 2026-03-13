@@ -117,3 +117,48 @@ Pour faciliter ce nettoyage :
 - Nous avons ensuite **créé la phase de “staging”**, qui nous permet d’intégrer progressivement les données dans la base et les tables de manière structurée.
 
 ***
+
+## Modèle Physique de Données (MPD)
+
+Le **MPD** traduit le MLD en **scripts SQL concrets** pour **PostgreSQL**, avec les types de données physiques, contraintes d'intégrité et index optimisés. Il a été finalisé lors du **Jour 4** et placé dans le dossier `initdb/` pour l'initialisation automatique via Docker.
+
+### Structure des tables physiques
+
+| Table              | PK              | Types principaux                  | Contraintes/Notes |
+|--------------------|-----------------|-----------------------------------|-------------------|
+| **contact**       | `id_contact SERIAL` | `nom VARCHAR(100)`, `email VARCHAR(255) UNIQUE` | Index sur email |
+| **fournisseur**   | `id_fournisseur SERIAL` | `nom_entreprise VARCHAR(200)`, `remarques TEXT` | FK → contact, type_materiau |
+| **type_materiau** | `id_type SERIAL` | `nom_materiau VARCHAR(50) UNIQUE` | Table de référence |
+| **inventaire**    | `id_inventaire SERIAL` | `latitude DECIMAL(10,8)`, `longitude DECIMAL(11,8)` | FK → fournisseur, type_materiau, etat |
+| **signalement**   | `id_signalement SERIAL` | `date TIMESTAMP`, `statut ENUM('ouvert','en cours','clos')` | FK → inventaire |
+| **intervention**  | `id_intervention SERIAL` | `date TIMESTAMP`, `technicien VARCHAR(100)` | FK → signalement, type_materiau |
+
+### Exemple de script SQL (extrait `initdb/create_tables.sql`)
+```sql
+-- Table de référence des matériaux
+CREATE TABLE type_materiau (
+    id_type SERIAL PRIMARY KEY,
+    nom_materiau VARCHAR(50) UNIQUE NOT NULL
+);
+
+-- Table inventaire avec géolocalisation
+CREATE TABLE inventaire (
+    id_inventaire SERIAL PRIMARY KEY,
+    type VARCHAR(50) NOT NULL,
+    latitude DECIMAL(10,8) NOT NULL,
+    longitude DECIMAL(11,8) NOT NULL,
+    etat VARCHAR(20) DEFAULT 'bon',
+    fk_fournisseur INTEGER REFERENCES fournisseur(id_fournisseur),
+    fk_type_materiau INTEGER REFERENCES type_materiau(id_type)
+);
+```
+
+### Optimisations physiques
+- **Types adaptés** : `DECIMAL` pour coordonnées GPS précises, `TIMESTAMP` pour dates/heures.
+- **Index spatiaux** : Prévu pour latitude/longitude (extension PostGIS possible).
+- **Contraintes d'intégrité** : Clés étrangères avec `ON DELETE CASCADE` pour cohérence.
+- **Import CSV** : Scripts `COPY` optimisés pour charger les données nettoyées depuis les fichiers Excel convertis.
+
+Ce MPD est **opérationnel** et testé via le `docker-compose.yml`. Les données CSV nettoyées sont prêtes pour l'import en staging.
+
+***
