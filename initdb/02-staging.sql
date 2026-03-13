@@ -16,22 +16,30 @@ CREATE TABLE staging.fournisseurs_contacts (
 );
 
 CREATE TABLE staging.interventions (
-    id TEXT, type TEXT, a TEXT, objet TEXT, 
+    id TEXT, type TEXT, date TEXT, objet TEXT, 
     type_intervention TEXT, technicien TEXT,
     duree TEXT, cout_materiel TEXT, remarques TEXT 
 );
-#a cest la date comment faire
+
 CREATE TABLE staging.signalements (
     id TEXT, type TEXT, date TEXT, signale_par TEXT,
     objet TEXT, description TEXT,
     urgence TEXT, statut TEXT, remarques TEXT
 );
-#date ? cest la date comment faire
--- ... (signalements, interventions, fournisseurs)
 
 -- Import CSV — data/ est monté sous /data/ dans le conteneur
 COPY staging.inventaire_mobilier
 FROM '/data/inventaire_mobilier.csv'
-WITH (FORMAT csv, HEADER true, DELIMITER ',', ENCODING 'UTF8');
+WITH (FORMAT csv, HEADER true, DELIMITER ';', ENCODING 'UTF8');
 
--- ... (répéter pour les 3 autres fichiers)
+COPY staging.fournisseurs_contacts
+FROM '/data/fournisseurs_contacts.csv'
+WITH (FORMAT csv, HEADER true, DELIMITER ';', ENCODING 'UTF8');
+
+COPY staging.interventions
+FROM '/data/interventions.csv'
+WITH (FORMAT csv, HEADER true, DELIMITER ';', ENCODING 'UTF8');
+
+COPY staging.signalements
+FROM '/data/COPY staging.signalements.csv'
+WITH (FORMAT csv, HEADER true, DELIMITER ';', ENCODING 'UTF8');
