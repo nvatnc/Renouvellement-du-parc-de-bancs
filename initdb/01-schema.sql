@@ -10,12 +10,12 @@ CREATE TABLE fournisseurs (
 
 CREATE TABLE interventions (
     id SERIAL PRIMARY KEY,
-    date,
+    date_interventions DATE,
 );
 
 CREATE TABLE signalements (
     id SERIAL PRIMARY KEY,
-    date,
-    description VARCHAR(100) NOT NULL,
+    date_signalements DATE,
+    description_etat VARCHAR(100) NOT NULL,
 
 );
