@@ -1,5 +1,6 @@
 services:
   db:
+  #ne pas oublier d'aller sur postgreSQL et pas SQL
     image: postgis/postgis:16-3.4
     container_name: postgres-renbancs
     environment:

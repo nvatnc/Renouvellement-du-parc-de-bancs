@@ -1,3 +1,5 @@
+-- Active: 1774608706951@@127.0.0.1@5438@renbancs
+-- Active: 1774608706951@@127.0.0.1@5438@renbancs
 CREATE EXTENSION IF NOT EXISTS unaccent;
  
 INSERT INTO public.type_inventaire (libelle)
@@ -5,7 +7,7 @@ INSERT INTO public.type_inventaire (libelle)
 -- WHERE type_normalise IS NOT NULL;
 
 
-SELECT DISTINCT unaccent(LOWER(TRIM(type))
+SELECT DISTINCT unaccent(LOWER(TRIM(type)))
 FROM inventaire_mobilier
 WHERE type IS NOT NULL;
  
