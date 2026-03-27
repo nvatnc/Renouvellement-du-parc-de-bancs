@@ -1,7 +1,3 @@
-CREATE TABLE type_materiel (
-  id SERIAL PRIMARY KEY,
-  libelle VARCHAR(100) NOT NULL
-);
 
 CREATE TABLE type_inventaire (
   id SERIAL PRIMARY KEY,
@@ -57,8 +53,7 @@ CREATE TABLE fournisseurs (
   id SERIAL PRIMARY KEY,
   entreprise VARCHAR(255) NOT NULL,
   remarque TEXT,
-  id_contact INTEGER NOT NULL REFERENCES contact(id),
-  id_type_materiel INTEGER NOT NULL REFERENCES type_materiel(id)
+  id_contact INTEGER NOT NULL REFERENCES contact(id)
 );
 
 CREATE TABLE inventaire (
