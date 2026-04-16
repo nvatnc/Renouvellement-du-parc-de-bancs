@@ -30,23 +30,14 @@ CREATE TABLE urgence (
 );
 CREATE TABLE contact (
   id SERIAL PRIMARY KEY,
+  nom VARCHAR(100) NOT NULL,
   telephone VARCHAR(30) UNIQUE NOT NULL,
   email VARCHAR(255) UNIQUE NOT NULL
 );
 
-CREATE TABLE personne (
-  id SERIAL PRIMARY KEY,
-  nom VARCHAR(100) NOT NULL,
-  prenom VARCHAR(100) NOT NULL,
-  numero VARCHAR(30) UNIQUE,
-  mail VARCHAR(255) UNIQUE
-);
-
 CREATE TABLE techniciens (
   id SERIAL PRIMARY KEY,
-  nom VARCHAR(100) NOT NULL,
-  prenom VARCHAR(100) NOT NULL,
-  numero_telephone VARCHAR(30) UNIQUE
+  nom VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE fournisseurs (
@@ -74,7 +65,6 @@ CREATE TABLE signalements (
   date_signalements DATE NOT NULL,
   description TEXT NOT NULL,
   id_urgence INTEGER NOT NULL REFERENCES urgence(id),
-  id_personne INTEGER NOT NULL REFERENCES personne(id),
   id_statut INTEGER NOT NULL REFERENCES statut(id)
 );
 
@@ -100,4 +90,15 @@ CREATE TABLE signalements_inventaire (
   id_signalements INTEGER NOT NULL REFERENCES signalements(id),
   id_inventaire INTEGER NOT NULL REFERENCES inventaire(id),
   PRIMARY KEY(id_signalements, id_inventaire)
+);
+
+CREATE TABLE type_materiel_fournisseurs (
+  id_type_materiel INTEGER NOT NULL REFERENCES type_materiel(id),
+  id_fournisseurs INTEGER NOT NULL REFERENCES fournisseurs(id),
+  PRIMARY KEY(id_type_materiel, id_fournisseurs)
+);
+
+CREATE TABLE type_materiel (
+  id SERIAL PRIMARY KEY,
+  libelle VARCHAR(100) NOT NULL
 );
