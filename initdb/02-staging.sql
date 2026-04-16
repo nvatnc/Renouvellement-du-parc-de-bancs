@@ -1,3 +1,4 @@
+-- Active: 1773397426455@@127.0.0.1@5438@renbancs
 -- initdb/02-staging.sql
 
 CREATE SCHEMA IF NOT EXISTS staging;
