@@ -149,7 +149,7 @@ FROM (
                 WHEN LOWER(TRIM(contact)) = 'stagiaire' THEN 'Stagiaire'
                 ELSE NULL
             END AS techniciens
-        FROM staging.interventions
+        FROM staging.fournisseurs_contacts
     )
 WHERE
     techniciens IS NOT NULL;
@@ -165,8 +165,30 @@ FROM staging.fournisseurs_contacts s
 WHERE
     TRIM(x.materiel) <> '';
 
+SELECT
+  telephone,
+  CASE
+    WHEN telephone LIKE '+41%' THEN '0' || regexp_replace(substr(telephone, 4), '^\s+', '')
+    ELSE telephone
+  END AS  telephone
+ FROM staging.fournisseurs_contacts;
 
-    
+ SELECT
+  date,
+  to_char(
+    CASE
+      WHEN date ~ '^\d{2}\.\d{2}\.\d{4}$' THEN to_date("date", 'DD.MM.YeYYY')
+      WHEN date ~ '^\d{2}\.\d{2}\.\d{4}$' THEN to_date("date",'MM.DD.YYYY')
+      WHEN date ~ '^\d{4}-\d{2}-\d{2}$'   THEN to_date("date", 'YYYY-MM-DD')
+      ELSE NULL
+    END,
+    'DD.MM.YYYY'
+  ) AS date
+FROM staging.signalements;
+
+
+
+
 
 --DELETE FROM public.techniciens a USING public.techniciens b
 --WHERE

@@ -1,3 +1,4 @@
+-- Active: 1773397426455@@127.0.0.1@5438
 -- Types de mobilier
 SELECT type, COUNT(*) FROM staging.inventaire_mobilier GROUP BY type ORDER BY 2 DESC;
 

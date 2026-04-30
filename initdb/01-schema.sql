@@ -92,13 +92,15 @@ CREATE TABLE signalements_inventaire (
   PRIMARY KEY(id_signalements, id_inventaire)
 );
 
+CREATE TABLE type_materiel (
+  id SERIAL PRIMARY KEY,
+  libelle VARCHAR(100) NOT NULL
+);
+
+
 CREATE TABLE type_materiel_fournisseurs (
   id_type_materiel INTEGER NOT NULL REFERENCES type_materiel(id),
   id_fournisseurs INTEGER NOT NULL REFERENCES fournisseurs(id),
   PRIMARY KEY(id_type_materiel, id_fournisseurs)
 );
 
-CREATE TABLE type_materiel (
-  id SERIAL PRIMARY KEY,
-  libelle VARCHAR(100) NOT NULL
-);
