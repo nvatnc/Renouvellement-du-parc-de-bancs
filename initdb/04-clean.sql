@@ -165,6 +165,9 @@ FROM staging.fournisseurs_contacts s
 WHERE
     TRIM(x.materiel) <> '';
 
+
+
+
 SELECT
   telephone,
   CASE
@@ -186,6 +189,200 @@ SELECT
   ) AS date
 FROM staging.signalements;
 
+INSERT INTO public.type_materiel (libelle)
+SELECT DISTINCT
+    LOWER(TRIM(t.val)) AS libelle
+FROM staging.fournisseurs_contacts fc
+CROSS JOIN LATERAL UNNEST(STRING_TO_ARRAY(fc.type_materiel, ',')) AS t(val)
+WHERE TRIM(t.val) <> '';
+
+INSERT INTO public.contact (nom, telephone, email)
+SELECT DISTINCT
+  TRIM(fournisseurs_contacts.contact) AS nom,
+  CASE
+    WHEN fournisseurs_contacts.telephone LIKE '+41%' THEN 
+      '0' || regexp_replace(substr(fournisseurs_contacts.telephone, 4), '^\s+', '')
+    WHEN TRIM(fournisseurs_contacts.telephone) = '' THEN NULL
+    ELSE TRIM(fournisseurs_contacts.telephone)
+  END AS telephone,
+  CASE
+    WHEN fournisseurs_contacts.email IS NULL 
+         OR fournisseurs_contacts.email = '(NULL)' 
+         OR fournisseurs_contacts.email ILIKE '%site web%' 
+         OR TRIM(fournisseurs_contacts.email) = '' THEN NULL
+    ELSE LOWER(TRIM(fournisseurs_contacts.email))
+  END AS email
+FROM staging.fournisseurs_contacts
+WHERE
+  fournisseurs_contacts.contact IS NOT NULL
+  AND TRIM(fournisseurs_contacts.contact) <> ''
+  AND fournisseurs_contacts.contact NOT ILIKE '%site web%';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+INSERT INTO public.signalements (
+date_signalements,
+description,
+id_urgence,
+id_statut
+)
+SELECT
+CASE
+WHEN TRIM(s.date) ~ '^\d{4}-\d{2}-\d{2}$'
+THEN to_date(TRIM(s.date), 'YYYY-MM-DD')
+WHEN TRIM(s.date) ~ '^\d{2}\.\d{2}\.\d{4}$'
+THEN to_date(TRIM(s.date), 'DD.MM.YYYY')
+ELSE NULL
+END AS date_signalements,
+TRIM(s.description) AS description,
+COALESCE(
+    (SELECT u.id FROM public.urgence u
+     WHERE LOWER(u.libelle) = LOWER(TRIM(s.urgence))
+     LIMIT 1),
+    (SELECT id FROM public.urgence WHERE libelle = 'normal')
+) AS id_urgence,
+COALESCE(
+    (SELECT st.id FROM public.statut st
+     WHERE LOWER(st.libelle) = CASE
+         WHEN LOWER(TRIM(s.statut)) LIKE '%fait%'        THEN 'fait'
+         WHEN LOWER(TRIM(s.statut)) LIKE '%en attente%'  THEN 'en attente'
+         WHEN LOWER(TRIM(s.statut)) LIKE '%en cours%'    THEN 'en cours'
+         ELSE NULL
+     END
+     LIMIT 1),
+    (SELECT id FROM public.statut WHERE LOWER(libelle) = 'en attente')
+) AS id_statut
+
+FROM staging.signalements s
+WHERE
+-- Exclure lignes sans date valide
+(TRIM(s.date) ~ '^\d{4}-\d{2}-\d{2}$' OR TRIM(s.date) ~ '^\d{2}\.\d{2}\.\d{4}$')
+AND TRIM(s.description) <> '';
+
+
+
+INSERT INTO public.inventaire (
+    lieu,
+    date_installation,
+    remarque,
+    id_fournisseurs,
+    id_type_inventaire,
+    id_materiaux,
+    id_etat
+)
+SELECT
+    brut.lieu,
+    CASE
+        WHEN trim(brut.date_installation) ~ '^\d{2}\.\d{2}\.\d{4}$'
+            THEN to_date(trim(brut.date_installation), 'DD.MM.YYYY')
+        WHEN trim(brut.date_installation) ~ '^\d{4}-\d{2}-\d{2}$'
+            THEN to_date(trim(brut.date_installation), 'YYYY-MM-DD')
+        WHEN trim(brut.date_installation) ~ '^\d{4}$'
+            THEN to_date(trim(brut.date_installation), 'YYYY')
+        WHEN lower(trim(brut.date_installation)) ~ '^(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)\s+\d{4}$'
+            THEN to_date(
+                '01 ' ||
+                CASE lower(split_part(trim(brut.date_installation), ' ', 1))
+                    WHEN 'janvier' THEN 'January'
+                    WHEN 'février' THEN 'February'
+                    WHEN 'mars' THEN 'March'
+                    WHEN 'avril' THEN 'April'
+                    WHEN 'mai' THEN 'May'
+                    WHEN 'juin' THEN 'June'
+                    WHEN 'juillet' THEN 'July'
+                    WHEN 'août' THEN 'August'
+                    WHEN 'septembre' THEN 'September'
+                    WHEN 'octobre' THEN 'October'
+                    WHEN 'novembre' THEN 'November'
+                    WHEN 'décembre' THEN 'December'
+                END || ' ' || split_part(trim(brut.date_installation), ' ', 2),
+                'DD Month YYYY'
+            )
+        ELSE NULL
+    END,
+    brut.remarques,
+    NULL,
+    ti.id,
+    m.id,
+    e.id
+FROM staging.inventaire_mobilier brut
+JOIN public.type_inventaire ti ON lower(trim(ti.libelle)) = lower(trim(brut.type))
+JOIN public.materiaux m ON lower(trim(m.libelle)) = lower(trim(brut.materiau))
+JOIN public.etat e ON lower(trim(e.libelle)) = lower(trim(brut.etat));
+
+
+
+
+
+
+
+INSERT INTO public.fournisseurs (entreprise, remarque, id_contact)
+SELECT DISTINCT
+TRIM(fc.entreprise) AS entreprise,
+NULLIF(TRIM(fc.remarques), '') AS remarque,
+c.id AS id_contact
+FROM staging.fournisseurs_contacts fc
+JOIN public.contact c
+ON TRIM(c.nom) = TRIM(fc.contact)
+WHERE
+TRIM(fc.entreprise) <> ''
+AND fc.contact NOT ILIKE '%site web%';
+
+
+INSERT INTO public.type_materiel_fournisseurs (id_type_materiel, id_fournisseurs)
+SELECT DISTINCT
+tm.id,
+f.id
+FROM staging.fournisseurs_contacts fc
+JOIN public.fournisseurs f
+ON TRIM(f.entreprise) = TRIM(fc.entreprise)
+CROSS JOIN LATERAL UNNEST(STRING_TO_ARRAY(fc.type_materiel, ',')) AS t(val)
+JOIN public.type_materiel tm
+ON LOWER(TRIM(tm.libelle)) = LOWER(TRIM(t.val))
+WHERE TRIM(t.val) <> '';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DELETE FROM public.type_materiel;
 
 
 

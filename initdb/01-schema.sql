@@ -1,3 +1,4 @@
+-- Active: 1773397426455@@127.0.0.1@5438@renbancs
 
 CREATE TABLE type_inventaire (
   id SERIAL PRIMARY KEY,
@@ -31,8 +32,8 @@ CREATE TABLE urgence (
 CREATE TABLE contact (
   id SERIAL PRIMARY KEY,
   nom VARCHAR(100) NOT NULL,
-  telephone VARCHAR(30) UNIQUE NOT NULL,
-  email VARCHAR(255) UNIQUE NOT NULL
+  telephone VARCHAR(30) NOT NULL,
+  email VARCHAR(255) 
 );
 
 CREATE TABLE techniciens (
@@ -50,8 +51,6 @@ CREATE TABLE fournisseurs (
 CREATE TABLE inventaire (
   id SERIAL PRIMARY KEY,
   lieu VARCHAR(255) NOT NULL,
-  latitude NUMERIC(9,6),
-  longitude NUMERIC(9,6),
   date_installation DATE NOT NULL,
   remarque TEXT,
   id_fournisseurs INTEGER REFERENCES fournisseurs(id),
