@@ -45,6 +45,13 @@ CREATE TABLE staging.signalements (
     statut TEXT
 );
 
+CREATE TABLE staging.fournisseur_inventaire (
+    id TEXT,
+    type TEXT,
+    materiau TEXT, 
+    entreprise TEXT
+);
+
 
 -- Import CSV — data/ est monté sous /data/ dans le conteneur
 COPY staging.inventaire_mobilier
@@ -61,4 +68,8 @@ WITH (FORMAT csv, HEADER true, DELIMITER ';', ENCODING 'UTF8');
 
 COPY staging.signalements
 FROM '/data/signalements.csv'
+WITH (FORMAT csv, HEADER true, DELIMITER ';', ENCODING 'UTF8');
+
+COPY staging.fournisseur_inventaire
+FROM '/data/fournisseur_inventaire.csv'
 WITH (FORMAT csv, HEADER true, DELIMITER ';', ENCODING 'UTF8');
