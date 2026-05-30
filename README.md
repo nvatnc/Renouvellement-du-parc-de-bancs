@@ -1,164 +1,186 @@
-# Projet : Création d’une infrastructure de données  
-### Sujet : Renouvellement des bancs dans le parc public  
+# Projet : Création d'une infrastructure de données
 
-## Jour 1 — 20 février 2026
+## Sujet : Renouvellement des bancs dans le parc public
 
-Notre groupe a pour mission de **concevoir et gérer l’infrastructure des données** liée au **renouvellement des bancs dans le parc public**.  
-La responsable du service technique (notre enseignante) nous a fourni les fiches de données nécessaires au projet, disponibles sous forme de **fichiers Excel**.
+## Présentation du projet
 
-Nous avons commencé par **analyser les quatre fichiers Excel** remis :
-- **Fournisseurs**
-- **Inventaires**
-- **Interventions**
-- **Signalements**
+Ce projet a pour objectif de concevoir et mettre en place une infrastructure de données permettant le suivi du renouvellement des bancs d'un parc public.
 
-Chaque table contient plusieurs attributs. Pour identifier ceux qui nous seraient utiles, nous avons sélectionné les éléments les plus pertinents pour notre objectif : le suivi du renouvellement des bancs.
+Les données nécessaires au projet ont été fournies sous la forme de plusieurs fichiers Excel contenant des informations relatives aux fournisseurs, aux bancs installés, aux interventions réalisées et aux signalements effectués par les usagers.
 
-Ensuite, nous avons :
-- **Créé un MCD (Modèle Conceptuel de Données)** afin de visualiser la structure des données.
-- **Élaboré un MLD (Modèle Logique de Données)** pour normaliser et corriger les tables et leurs relations.
-- **Nettoyé et ajusté les données** selon les observations faites durant notre analyse initiale.
+L'ensemble du travail a consisté à analyser ces données, les modéliser, les nettoyer, puis les intégrer dans une base de données PostgreSQL déployée dans un environnement Docker.
 
-Enfin, nous avons :
-- Créé notre **dépôt GitHub** et ajouté un **fichier README** pour documenter le projet.  
-- Poursuivi avec la **rédaction du MLD**, en intégrant les ajustements issus du MCD.
+---
 
-***
+# Analyse des données
 
-## Modèle Conceptuel de Données (MCD)
+Nous avons commencé par étudier les différents fichiers Excel mis à disposition :
 
-Le **MCD** représente la structure conceptuelle de notre base de données pour le suivi du renouvellement des bancs du parc public. Il identifie les **4 entités principales** et leurs **relations**, basées sur l'analyse des fichiers Excel fournis.
+* Fournisseurs
+* Inventaires
+* Interventions
+* Signalements
 
-### Description des entités
+Cette phase d'analyse nous a permis :
 
-| Entité       | Attributs principaux                  | Rôle dans le projet |
-|--------------|---------------------------------------|---------------------|
-| **Fournisseurs** | PKd (id), Entreprise, Téléphone, Email, Rémarques | Référence des fournisseurs de bancs/matériel |
-| **Inventaire** | PKd (id), Type, Matériau, Latitude, Longitude, État | Suivi des bancs installés dans le parc |
-| **Interventions** | PKd (id), Date, Objet intervention, Technicien, Matériel utilisé, Rémarques | Historique des actions de maintenance/renouvellement |
-| **Signalements** | PKd (id), Date, Description, Statut | Rapports citoyens sur l'état des bancs |
+* d'identifier les données pertinentes pour le projet ;
+* de comprendre les relations entre les différentes informations ;
+* de repérer les incohérences et les données à corriger ;
+* de préparer la modélisation de la future base de données.
 
-### Relations entre entités
-- **Fournisseurs** → **Inventaire** : Un fournisseur peut livrer plusieurs bancs (relation 1,n).
-- **Inventaire** → **Interventions** : Un banc peut faire l'objet de plusieurs interventions (relation 1,n).
-- **Interventions** → **Signalements** : Une intervention peut résulter d'un ou plusieurs signalements (relation n,1). *Note : "Si possible détecter un problème → intervention"*.
+---
 
-### Annotations et décisions prises
-Nos observations sur les données Excel nous ont conduits à ces ajustements :
-- **Fusion des fournisseurs** : Éviter les doublons en normalisant les noms d'entreprises.
-- **Géolocalisation précise** : Latitude/longitude obligatoires pour cartographier les bancs.
-- **Statut des signalements** : Ajout pour suivre l'évolution (ouvert/clos/en cours).
-- **Lien intervention-signalement** : Permet de tracer les actions correctives depuis les rapports citoyens.
+# Modèle Conceptuel de Données (MCD)
 
-Ce MCD a servi de base pour passer au **MLD** (normalisation 3NF) puis au **MPD** (implémentation PostgreSQL via Docker).
+Le MCD représente la structure générale de la base de données et les relations entre les principales entités du projet.
 
-***
+## Entités principales
 
-## Jour 2 — 27 février 2026
+| Entité        | Attributs principaux                                     | Description                                        |
+| ------------- | -------------------------------------------------------- | -------------------------------------------------- |
+| Fournisseurs  | id, entreprise, téléphone, email, remarques              | Référence les fournisseurs de bancs et de matériel |
+| Inventaire    | id, type, matériau, latitude, longitude, état            | Recense les bancs présents dans le parc            |
+| Interventions | id, date, objet, technicien, matériel utilisé, remarques | Historique des opérations réalisées                |
+| Signalements  | id, date, description, statut                            | Signalements effectués par les usagers             |
 
-Lors de cette journée, nous avons **finalisé le MLD** et consolidé notre compréhension de **Git**.  
-Nous avons ensuite **initialisé le projet** en y intégrant les **données (fichiers Excel)** fournies au départ.
+## Relations
 
-Les étapes réalisées :
-- Création du fichier **`docker-compose.yml`** pour configurer l’environnement du projet.  
-- Mise en place du dossier **`initdb`**, dans lequel nous avons commencé la rédaction du **MPD (Modèle Physique de Données)**.  
-- Réalisation des **commits** et **synchronisation du dépôt Git** afin de conserver une trace de toutes les modifications.
+* Un fournisseur peut fournir plusieurs bancs.
+* Un banc peut faire l'objet de plusieurs interventions.
+* Un banc peut recevoir plusieurs signalements.
+* Un signalement peut conduire à une ou plusieurs interventions.
 
-***
+---
 
-## Jour 3 — 6 mars 2026
+# Modèle Logique de Données (MLD)
 
-Cette journée a été plutôt calme, car nous étions **en avance sur le planning**.  
-Nous avons pris le temps de **vérifier une dernière fois le  et le MLD**, afin de s’assurer de leur cohérence.  
-Ensuite, nous avons **commencé la rédaction du MPD (Modèle Physique de Données)**.
-Voici une section **Markdown complète** pour ton fichier **README.md**, dédiée au **MLD (Modèle Logique de Données)**. Elle documente le diagramme de manière claire et professionnelle, en continuité avec la section MCD précédente. Colle-la juste après !
+Le MLD traduit le modèle conceptuel en structure relationnelle normalisée.
 
-***
+Le fichier contenant le MLD sous format png se trouve dans le dossier schema.
 
-## Modèle Logique de Données (MLD)
+## Relations logiques
 
-Le **MLD** affine le MCD en **normalisant les tables** (forme normale 3NF) et en définissant les **clés primaires (PK)** et **clés étrangères (FK)** pour l'implémentation relationnelle. Il intègre les corrections issues de l'analyse des données Excel (suppression des doublons, normalisation des types).
+* Fournisseur → Inventaire (1,N)
+* Inventaire → Signalement (1,N)
+* Signalement → Intervention (1,N)
 
+## Normalisation
 
-### Structure des tables
+Les principales améliorations apportées sont :
 
-| Table          | Clés primaires (PK) | Clés étrangères (FK)                  | Attributs principaux |
-|----------------|---------------------|----------------------------------------|----------------------|
-| **contact**   | id_contact         | -                                      | nom, prénom, téléphone, email |
-| **fournisseur**| id_fournisseur    | fk_contact, fk_type_materiau          | nom_entreprise, remarques |
-| **inventaire**| id_inventaire     | fk_fournisseur, fk_type_materiau, fk_etat | type, latitude, longitude, etat |
-| **signalement**| id_signalement   | fk_inventaire                         | date, description, statut |
-| **intervention** | id_intervention | fk_signalement, fk_type_materiau      | date, technicien, materiel_utilise, problemes |
+* séparation des informations de contact et des fournisseurs ;
+* normalisation des matériaux ;
+* standardisation des états des bancs ;
+* suppression des redondances de données.
 
-### Relations logiques
-- **1,n : Fournisseur → Inventaire** : Un fournisseur peut avoir plusieurs bancs en inventaire.
-- **1,n : Inventaire → Signalement** : Un banc peut générer plusieurs signalements citoyens.
-- **1,n : Signalement → Intervention** : Un signalement peut déclencher plusieurs interventions.
-- **n,n : Type_matériau** (table de liaison) : Gère les associations multiples (ex. : un banc utilise plusieurs matériaux).
+---
 
-### Améliorations apportées par rapport au MCD
-- **Séparation Contact/Fournisseur** : Évite les doublons en isolant les infos personnelles des entreprises.
-- **Types de matériaux normalisés** : Table de référence pour éviter les incohérences (ex. : "bois" vs "Bois").
-- **États standardisés** : Pour l'inventaire (bon/à rénover/HS).
-- **Géolocalisation** : Coordonnées précises pour mapping futur des bancs.
+# Modèle Physique de Données (MPD)
 
-Ce MLD a été validé lors du **Jour 4** et sert de base pour le **MPD** (scripts SQL de création).
+Le MPD correspond à l'implémentation de la base de données PostgreSQL.
 
-***
+Fournisseurs 0...* – 1 Inventaire
+Inventaire 0...* – 1...* Interventions
+Inventaire 0...* – 1...* Signalements
+Interventions 0...1 – 0...* Signalements
 
-## Jour 4 — 13 mars 2026
+## Exemple de script SQL
 
-Nous avons **terminé la rédaction du MPD**, qui correspond à nos choix et à la structure souhaitée pour la base de données.  
-Nous avons ensuite entamé le **nettoyage des données** contenues dans les fichiers Excel.  
-Certaines tables présentaient des **attributs incohérents, en double ou mal orthographiés**, ce qui entraînait des erreurs lors de la création de la base de données.
-
-Pour faciliter ce nettoyage :
-- Nous avons **exporté les fichiers Excel au format CSV**, afin d’obtenir des données plus lisibles et exploitables par VS Code.  
-- Nous avons ensuite **créé la phase de “staging”**, qui nous permet d’intégrer progressivement les données dans la base et les tables de manière structurée.
-
-***
-
-## Modèle Physique de Données (MPD)
-
-Le **MPD** traduit le MLD en **scripts SQL concrets** pour **PostgreSQL**, avec les types de données physiques, contraintes d'intégrité et index optimisés. Il a été finalisé lors du **Jour 4** et placé dans le dossier `initdb/` pour l'initialisation automatique via Docker.
-
-### Structure des tables physiques
-
-| Table              | PK              | Types principaux                  | Contraintes/Notes |
-|--------------------|-----------------|-----------------------------------|-------------------|
-| **contact**       | `id_contact SERIAL` | `nom VARCHAR(100)`, `email VARCHAR(255) UNIQUE` | Index sur email |
-| **fournisseur**   | `id_fournisseur SERIAL` | `nom_entreprise VARCHAR(200)`, `remarques TEXT` | FK → contact, type_materiau |
-| **type_materiau** | `id_type SERIAL` | `nom_materiau VARCHAR(50) UNIQUE` | Table de référence |
-| **inventaire**    | `id_inventaire SERIAL` | `latitude DECIMAL(10,8)`, `longitude DECIMAL(11,8)` | FK → fournisseur, type_materiau, etat |
-| **signalement**   | `id_signalement SERIAL` | `date TIMESTAMP`, `statut ENUM('ouvert','en cours','clos')` | FK → inventaire |
-| **intervention**  | `id_intervention SERIAL` | `date TIMESTAMP`, `technicien VARCHAR(100)` | FK → signalement, type_materiau |
-
-### Exemple de script SQL (extrait `initdb/create_tables.sql`)
 ```sql
--- Table de référence des matériaux
 CREATE TABLE type_materiau (
     id_type SERIAL PRIMARY KEY,
     nom_materiau VARCHAR(50) UNIQUE NOT NULL
 );
 
--- Table inventaire avec géolocalisation
 CREATE TABLE inventaire (
     id_inventaire SERIAL PRIMARY KEY,
     type VARCHAR(50) NOT NULL,
-    latitude NUMERIC (9, 6) NOT NULL,
-    longitude NUMERIC(9, 6) NOT NULL,
+    latitude NUMERIC(9,6) NOT NULL,
+    longitude NUMERIC(9,6) NOT NULL,
     etat VARCHAR(20) DEFAULT 'bon',
     fk_fournisseur INTEGER REFERENCES fournisseur(id_fournisseur),
     fk_type_materiau INTEGER REFERENCES type_materiau(id_type)
 );
 ```
 
-### Optimisations physiques
-- **Types adaptés** : `DECIMAL` pour coordonnées GPS précises, `TIMESTAMP` pour dates/heures.
-- **Index spatiaux** : Prévu pour latitude/longitude (extension PostGIS possible).
-- **Contraintes d'intégrité** : Clés étrangères avec `ON DELETE CASCADE` pour cohérence.
-- **Import CSV** : Scripts `COPY` optimisés pour charger les données nettoyées depuis les fichiers Excel convertis.
+## Optimisations
 
-Ce MPD est **opérationnel** et testé via le `docker-compose.yml`. Les données CSV nettoyées sont prêtes pour l'import en staging.
+* utilisation de types adaptés aux données ;
+* mise en place des clés étrangères ;
+* préparation à l'utilisation de PostGIS ;
+* chargement des données via fichiers CSV.
 
-***
+---
+
+# Nettoyage des données
+
+Avant l'intégration dans la base de données, un important travail de préparation des données a été réalisé.
+
+Les actions effectuées comprennent :
+
+* conversion des fichiers Excel au format CSV ;
+* suppression des doublons ;
+* correction des fautes de saisie ;
+* harmonisation des formats ;
+* vérification des valeurs manquantes ;
+* contrôle de la cohérence entre les tables ;
+* nettoyage des différentes tables afin de garantir l'intégrité des données avant leur import ;
+* l'ajout des rôles.
+
+Cette étape a permis de disposer d'un jeu de données fiable et exploitable pour la suite du projet.
+
+---
+
+# Environnement technique
+
+Le projet s'appuie sur les technologies suivantes :
+
+* Docker
+* Git
+* GitHub
+* Visual Studio Code
+
+---
+
+# Organisation du dépôt
+
+```text
+.
+├── data/
+│   ├── fournisseur_inventaire.csv
+│   ├── fournisseurs_contacts.csv
+│   ├── inventaire_mobilier.csv
+│   ├── interventions.csv
+│   └── signalements.csv
+│
+├── excel/
+│   ├── fournisseur_inventaire.xlsx
+│   ├── fournisseurs_contacts.xlsx
+│   ├── inventaire_mobilier.xlsx
+│   ├── interventions.xlsx
+│   └── signalements.xlsx
+│
+├── initdb/
+│   ├── 01-schema.sql
+│   ├── 02-staging.sql
+│   ├── 03-explore.sql
+│   ├── 04-clean.sql
+│   └── 05-roles.sql
+│
+├── schema/
+│   ├── MLD.png
+│
+├── docker-compose.yml
+└── README.md
+```
+
+---
+
+# Résultat
+
+Le projet aboutit à une infrastructure de données complète permettant :
+
+* le suivi des bancs du parc ;
+* la gestion des fournisseurs ;
+* le traitement des signalements ;
+* le suivi des interventions.
